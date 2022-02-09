@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^0.20.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "google-distance-matrix": "^1.1.1",
+    "google-maps-direction": "^1.0.0",
+    "mongoose": "^5.5.7",
+    "mssql": "^5.1.0",
+    "path": "^0.12.7",
+    "socket.io": "^2.3.0"
+  },
+  "name": "api-node-socket-io-toproute",
+  "version": "1.0.0",
+  "main": "index.js",
+  "start": "nodemon server.js",
+  "license": "MIT"
+}
