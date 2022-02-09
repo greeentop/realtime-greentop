@@ -14,32 +14,24 @@ const io = require('socket.io')(http)
 // app.use(express.json());
 
 
-io.on("disconnect", function (client) {
+io.on("disconnect", function(client) {
 
     console.log('disconectado: ' + client.id)
-    //     io.open();
+        //     io.open();
 })
 
+io.on("connection", function(client) {
+
+    client.on("TopRoute-login", function(name) {
 
 
-
-io.on("connection", function (client) {
-
-    client.on("TopRoute-login", function (name) {
-
-        if (name.pais == 'Colombia' ) {
+        if (name.pais == 'Colombia') {
             console.log(`id:${client.id}  - ${name.name} conectou COLOMBIA`)
 
         } else {
             console.log(`id:${client.id}  -  ${name.name.NM_FUNCIONARIOS} conectou BRASIL`)
         }
-        // console.log("Usuario : " + name  +  ' conectado');
-        //     //   clients[client.id] = name;
-        //     //   client.emit("update", "You have connected to the server.");
-        //     //   client.broadcast.emit("update", name + " has joined the server.")
 
-        //     // client.broadcast.emit('RetornoRouteasy', { name: '55554433','veiculo':'emf-8535' });
-        //         io.emit('server ready', {msg: 'hi'});
     });
 
 
@@ -49,55 +41,55 @@ app.use(bodyParser.json({ limit: '50mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.post('/routeasyReturn', (req, res) => {
-    const site              = req.body.routing.site;
-    const route             = req.body.routing.name.split('-')
-    const cod_roteirizacao  = route[0]
-    const cod_rota          = route[1]
-    const rotas             = req.body.results.routes
-    const services          = req.body.routing.data.services
-    const locations         = req.body.routing.data.locations
+    const site = req.body.routing.site;
+    const route = req.body.routing.name.split('-')
+    const cod_roteirizacao = route[0]
+    const cod_rota = route[1]
+    const rotas = req.body.results.routes
+    const services = req.body.routing.data.services
+    const locations = req.body.routing.data.locations
 
-    var pais ="";
+    var pais = "";
 
-    if(site=="5f3c08365502a6110593b7f7"){
-        pais    =   "Colombia"
-    }else{
-        pais    =   "Brasil"
+    if (site == "5f3c08365502a6110593b7f7") {
+        pais = "Colombia"
+    } else {
+        pais = "Brasil"
     }
 
     const filialRouter = {
-        name_retorno        : req.body.routing.name,
-        cod_roteirizacao    : cod_roteirizacao,
-        cod_rota            : cod_rota,
-        rotasRouteasy       : [],
-        pais                :pais
+        name_retorno: req.body.routing.name,
+        cod_roteirizacao: cod_roteirizacao,
+        cod_rota: cod_rota,
+        rotasRouteasy: [],
+        pais: pais
     }
 
-    rotas.forEach(function (route) {
+    rotas.forEach(function(route) {
 
         //pegar dados do veiculo
         const item = {
-            _idRoute    : route._id,
-            veiculo     : route.name,
-            kms         : route.distance,
+            _idRoute: route._id,
+            veiculo: route.name,
+            kms: route.distance,
             tempoServico: route.time,
-            capacidade  : route.capacities[0],
-            locations   : []
+            capacidade: route.capacities[0],
+            locations: []
         }
         const delivery_order = route.delivery_order
-        delivery_order.forEach(function (order) {
+        delivery_order.forEach(function(order) {
 
             //pegando somente os serviços de coleta e entrega desconsidentando a saida da filial e retorno a filial
             if (order.type != "depot") {
                 const location = {
-                    location        : order.location._id,
-                    order           : order.order,
-                    distance        : order.distance,
-                    duration        : order.duration,
-                    arrival_time    : order.arrival_time,
-                    departure_time  : order.departure_time,
-                    services        : mylocationsCompany(order.location._id, locations),
-                    consolidations  : myConsolidations(order.location, services)
+                    location: order.location._id,
+                    order: order.order,
+                    distance: order.distance,
+                    duration: order.duration,
+                    arrival_time: order.arrival_time,
+                    departure_time: order.departure_time,
+                    services: mylocationsCompany(order.location._id, locations),
+                    consolidations: myConsolidations(order.location, services)
                 }
                 item.locations.push(location)
             }
@@ -133,7 +125,7 @@ app.post('/routeasyReturn_old', (req, res) => {
 
 
 
-    routes.forEach(function (item) {
+    routes.forEach(function(item) {
 
         // const directions  =  item.directions
         const delivery_order = item.delivery_order
@@ -141,7 +133,7 @@ app.post('/routeasyReturn_old', (req, res) => {
 
         const localtions = []
 
-        delivery_order.forEach(function (order) {
+        delivery_order.forEach(function(order) {
 
             if (order.type != "depot") {
 
@@ -204,12 +196,12 @@ app.post('/routeasyReturn_old', (req, res) => {
 
 
 
-    retornos.forEach(function (item) {
+    retornos.forEach(function(item) {
 
         console.log(item.locations)
-        item.locations.forEach(async function (i) {
+        item.locations.forEach(async function(i) {
 
-            paulo.forEach(function (p) {
+            paulo.forEach(function(p) {
 
                 if (p.location === i.location) {
 
@@ -340,13 +332,13 @@ app.post('/routeasyReturn_old', (req, res) => {
     };
 
 
-    ordem_de_entrega_por_local.forEach(function (serv) {
+    ordem_de_entrega_por_local.forEach(function(serv) {
 
         const servico = filterItems(serv.location)
 
     })
 
-    veiculo.servicos.forEach(function (item) {
+    veiculo.servicos.forEach(function(item) {
         // console.log('servi')
         item.array = filterItems_new(item.location)
     })
@@ -362,21 +354,21 @@ app.get('/RetornoRouteasy', (req, res) => {
 
 
     axios.get(`https://newsitex.expressojundiai.com.br/ApiOTM`)
-        .then(function (response) {
+        .then(function(response) {
             // handle success
             res.json(response.data);
             //    console.log(response.data);
         })
-        .catch(function (error) {
+        .catch(function(error) {
             // handle error
             console.log(error);
         })
-        .then(function () {
+        .then(function() {
             // always executed
         });
 })
 
-app.get('/buscarcep/:cep', async (req, res) => {
+app.get('/buscarcep/:cep', async(req, res) => {
 
 
     console.log(req.params)
@@ -385,46 +377,46 @@ app.get('/buscarcep/:cep', async (req, res) => {
 
     const { cep } = req.params
     axios.get(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(function (response) {
+        .then(function(response) {
             // handle success
             res.json(response.data);
             //    console.log(response.data);
         })
-        .catch(function (error) {
+        .catch(function(error) {
             // handle error
             console.log(error);
         })
-        .then(function () {
+        .then(function() {
             // always executed
         });
 
 })
 
-http.listen(3000, function () {
+http.listen(3000, function() {
     console.log('socket io listada na porta 3000');
 });
 
 function mylocations(location, services) {
     const array = []
-    services.forEach(function (item) {
+    services.forEach(function(item) {
 
         if (item._id === location) {
             const serv = {
-                localtion       : location,
+                localtion: location,
                 cod_conhecimento: item.order_number,
-                tipo_servico    : item.service_type,
-                cod_cliente     : item.code,
-                nome_cliente    : item.name,
-                    endereco: {
-                        lat         : item.address.geocode.lat,
-                        lng         : item.address.geocode.lng,
-                        logradouro  : item.address.route,
-                        numero      : item.address.neighborhood,
-                        cidade      : item.address.city,
-                        uf          : item.address.state,
-                        cep         : item.address.postal_code,
-                        pais        : item.address.country
-                    }
+                tipo_servico: item.service_type,
+                cod_cliente: item.code,
+                nome_cliente: item.name,
+                endereco: {
+                    lat: item.address.geocode.lat,
+                    lng: item.address.geocode.lng,
+                    logradouro: item.address.route,
+                    numero: item.address.neighborhood,
+                    cidade: item.address.city,
+                    uf: item.address.state,
+                    cep: item.address.postal_code,
+                    pais: item.address.country
+                }
 
             }
 
@@ -434,32 +426,33 @@ function mylocations(location, services) {
     return array
 
 }
+
 function mylocationsCompany(location, services) {
     const array = []
 
-    
 
-    services.forEach(function (item) {
 
-        
+    services.forEach(function(item) {
+
+
         if (item._id === location) {
             console.log(item._id)
             const serv = {
-                localtion       : location,
+                localtion: location,
                 cod_conhecimento: item.order_number,
-                tipo_servico    : item.service_type,
-                cod_cliente     : item.code,
-                nome_cliente    : item.name,
-                    endereco: {
-                        lat         : item.address.geocode.lat,
-                        lng         : item.address.geocode.lng,
-                        logradouro  : item.address.route,
-                        numero      : item.address.neighborhood,
-                        cidade      : item.address.city,
-                        uf          : item.address.state,
-                        cep         : item.address.postal_code,
-                        pais        : item.address.country
-                    }
+                tipo_servico: item.service_type,
+                cod_cliente: item.code,
+                nome_cliente: item.name,
+                endereco: {
+                    lat: item.address.geocode.lat,
+                    lng: item.address.geocode.lng,
+                    logradouro: item.address.route,
+                    numero: item.address.neighborhood,
+                    cidade: item.address.city,
+                    uf: item.address.state,
+                    cep: item.address.postal_code,
+                    pais: item.address.country
+                }
 
             }
 
@@ -474,7 +467,7 @@ function mylocationsCompany(location, services) {
 function myConsolidations(location, services) {
 
     const array = []
-    services.forEach(function (item) {
+    services.forEach(function(item) {
 
         if (item.location === location) {
             const serv = {
