@@ -368,6 +368,38 @@ app.get('/RetornoRouteasy', (req, res) => {
         });
 })
 
+
+// app.get('/buscarceprua/:end', async(req, res) => {
+app.get('/buscarceprua/:rua/:cidade/:uf', async(req, res) => {
+
+
+    const { rua, cidade, uf } = req.params
+
+    console.log(rua, cidade, uf)
+        // var rua = document.getElementById('rua').value = ("");
+        // var cidade = document.getElementById('cidade').value = ("");
+        // var uf = document.getElementById('uf').value = ("");
+
+    // script.src = '//viacep.com.br/ws/' + uf + '/' + cidade + '/' + rua + '/json/?callback=meu_callback';
+
+    axios.get(`https://viacep.com.br/ws/${uf}/${cidade}/${rua}/json/`)
+        .then(function(response) {
+            // handle success
+            res.json(response.data);
+            //    console.log(response.data);
+        })
+        .catch(function(error) {
+            // handle error
+            console.log(error);
+        })
+        .then(function() {
+            // always executed
+        });
+
+
+
+
+})
 app.get('/buscarcep/:cep', async(req, res) => {
 
 
