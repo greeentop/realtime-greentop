@@ -42,6 +42,14 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.post('/routeasyReturn', (req, res) => {
 
+    const filialRouter = {
+        name_retorno: req.body.routing.name,
+        cod_roteirizacao: cod_roteirizacao,
+        cod_rota: cod_rota,
+        rotasRouteasy: [],
+        pais: pais
+    }
+
     try {
 
 
@@ -64,13 +72,7 @@ app.post('/routeasyReturn', (req, res) => {
             pais = "Brasil"
         }
 
-        const filialRouter = {
-            name_retorno: req.body.routing.name,
-            cod_roteirizacao: cod_roteirizacao,
-            cod_rota: cod_rota,
-            rotasRouteasy: [],
-            pais: pais
-        }
+
 
         rotas.forEach(function(route) {
 
