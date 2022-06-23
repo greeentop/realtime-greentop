@@ -42,6 +42,15 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.post('/routeasyReturn', (req, res) => {
 
+    const site = req.body.routing.site;
+    const route = req.body.routing.name.split('-')
+    const cod_roteirizacao = route[0]
+    const cod_rota = route[1]
+    const rotas = req.body.results.routes
+    const services = req.body.routing.data.services
+    const locations = req.body.routing.data.locations
+
+
     const filialRouter = {
         name_retorno: req.body.routing.name,
         cod_roteirizacao: cod_roteirizacao,
@@ -52,15 +61,6 @@ app.post('/routeasyReturn', (req, res) => {
 
     try {
 
-
-
-        const site = req.body.routing.site;
-        const route = req.body.routing.name.split('-')
-        const cod_roteirizacao = route[0]
-        const cod_rota = route[1]
-        const rotas = req.body.results.routes
-        const services = req.body.routing.data.services
-        const locations = req.body.routing.data.locations
 
         console.log(site);
 
@@ -109,10 +109,12 @@ app.post('/routeasyReturn', (req, res) => {
         })
 
     } catch (error) {
+
         res.json(error)
 
     } finally {
         io.emit('middleware-retorno', filialRouter);
+        res.json(filialRouter)
     }
 
 })
