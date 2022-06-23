@@ -41,67 +41,77 @@ app.use(bodyParser.json({ limit: '50mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.post('/routeasyReturn', (req, res) => {
-    const site = req.body.routing.site;
-    const route = req.body.routing.name.split('-')
-    const cod_roteirizacao = route[0]
-    const cod_rota = route[1]
-    const rotas = req.body.results.routes
-    const services = req.body.routing.data.services
-    const locations = req.body.routing.data.locations
 
-    var pais = "";
+    try {
 
-    if (site == "5f3c08365502a6110593b7f7") {
-        pais = "Colombia"
-    } else {
-        pais = "Brasil"
-    }
 
-    const filialRouter = {
-        name_retorno: req.body.routing.name,
-        cod_roteirizacao: cod_roteirizacao,
-        cod_rota: cod_rota,
-        rotasRouteasy: [],
-        pais: pais
-    }
 
-    rotas.forEach(function(route) {
+        const site = req.body.routing.site;
+        const route = req.body.routing.name.split('-')
+        const cod_roteirizacao = route[0]
+        const cod_rota = route[1]
+        const rotas = req.body.results.routes
+        const services = req.body.routing.data.services
+        const locations = req.body.routing.data.locations
 
-        //pegar dados do veiculo
-        const item = {
-            _idRoute: route._id,
-            veiculo: route.name,
-            kms: route.distance,
-            tempoServico: route.time,
-            capacidade: route.capacities[0],
-            locations: []
+        console.log(site);
+
+        var pais = "";
+
+        if (site == "5f3c08365502a6110593b7f7") {
+            pais = "Colombia"
+        } else {
+            pais = "Brasil"
         }
-        const delivery_order = route.delivery_order
-        delivery_order.forEach(function(order) {
 
-            //pegando somente os serviços de coleta e entrega desconsidentando a saida da filial e retorno a filial
-            if (order.type != "depot") {
-                const location = {
-                    location: order.location._id,
-                    order: order.order,
-                    distance: order.distance,
-                    duration: order.duration,
-                    arrival_time: order.arrival_time,
-                    departure_time: order.departure_time,
-                    services: mylocationsCompany(order.location._id, locations),
-                    consolidations: myConsolidations(order.location, services)
-                }
-                item.locations.push(location)
+        const filialRouter = {
+            name_retorno: req.body.routing.name,
+            cod_roteirizacao: cod_roteirizacao,
+            cod_rota: cod_rota,
+            rotasRouteasy: [],
+            pais: pais
+        }
+
+        rotas.forEach(function(route) {
+
+            //pegar dados do veiculo
+            const item = {
+                _idRoute: route._id,
+                veiculo: route.name,
+                kms: route.distance,
+                tempoServico: route.time,
+                capacidade: route.capacities[0],
+                locations: []
             }
+            const delivery_order = route.delivery_order
+            delivery_order.forEach(function(order) {
+
+                //pegando somente os serviços de coleta e entrega desconsidentando a saida da filial e retorno a filial
+                if (order.type != "depot") {
+                    const location = {
+                        location: order.location._id,
+                        order: order.order,
+                        distance: order.distance,
+                        duration: order.duration,
+                        arrival_time: order.arrival_time,
+                        departure_time: order.departure_time,
+                        services: mylocationsCompany(order.location._id, locations),
+                        consolidations: myConsolidations(order.location, services)
+                    }
+                    item.locations.push(location)
+                }
+            })
+
+            filialRouter.rotasRouteasy.push(item)
+
         })
 
-        filialRouter.rotasRouteasy.push(item)
+    } catch (error) {
+        res.json(error)
 
-    })
-
-    io.emit('middleware-retorno', filialRouter);
-
-    res.json(filialRouter)
+    } finally {
+        io.emit('middleware-retorno', filialRouter);
+    }
 
 })
 
